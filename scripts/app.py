@@ -25,21 +25,12 @@ def generate_output_video(bg_image_path: str) -> str:
 def display_generated_video(output_video_path):
     st.write(f"Generated video saved to {output_video_path}")
     st.video(output_video_path, loop=False, autoplay=True, muted=False)
-    # Display a slider to adjust video size
-    # DEFAULT_WIDTH = 80
-    # width = st.sidebar.slider(
-    #     label="Width", min_value=0, max_value=100, value=DEFAULT_WIDTH, format="%d%%"
-    # )
-
-    # width = max(width, 0.01)
-    # side = max((100 - width) / 2, 0.01)
-
-    # _, container, _ = st.columns([side, width, side])
-    # container.video(output_video_path, loop=False, autoplay=True, muted=False)
 
 
 st.set_page_config(
-    page_title="Paul Allen", page_icon=":speaking_head_in_silhouette:", layout="centered"
+    page_title="Paul Allen",
+    page_icon=":speaking_head_in_silhouette:",
+    layout="centered",
 )
 
 st.subheader("Upload your own cover art!")
@@ -54,9 +45,7 @@ st.subheader("OR")
 st.divider()
 
 st.subheader("Paste the YouTube Music link of your favourite song!")
-song_url = st.text_input(
-    ("YouTube Music URL"), value=None
-)
+song_url = st.text_input(("YouTube Music URL"), value=None)
 if song_url is not None:
     bg_image_path = get_ytmusic_thumbnail(song_url)
     output_video_path = generate_output_video(bg_image_path)
