@@ -41,6 +41,7 @@ def get_ytmusic_thumbnail(url: str) -> str | None:
             return None
         save_name = regex.findall(".*=(.*)", url)[0]  # extract last part of url
 
+        os.makedirs("./assets/thumbnails", exist_ok=True)
         save_path = os.path.join("./assets/thumbnails", f"{save_name}.jpg")
         with Image.open(BytesIO(rr.content)) as im:
             try:
