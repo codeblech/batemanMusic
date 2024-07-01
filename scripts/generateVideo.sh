@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "I have to return some videotapes..."
 
 # Use the first argument as the path to background image
 bgImagePath=$1
@@ -13,13 +12,16 @@ fi
 currentTime=$(date +"%H-%M-%S")
 
 batemanVideoPath="./assets/bateman_final.mp4"
-currentTime=$(date +"%H-%M-%S")
 outputFileName="out_$currentTime.mp4"
+outputFilePath="./outputs/$outputFileName"
 
 callFFMPEG() {
     ffmpeg -i "$bgImagePath" -i "$batemanVideoPath" -filter_complex \
     "[1:v]colorkey=0x00C04C:0.2:0.1[keyed];[0:v][keyed]overlay" \
-    ./outputs/$outputFileName
+    $outputFilePath
 }
 
-callFFMPEG $bgImagePath "./assets/bateman_final.mp4"
+callFFMPEG
+
+# Print the path to the generated video file
+echo "$outputFilePath"
