@@ -6,6 +6,7 @@
 # handle the landscape style thumbnails. maybe crop the bateman video according to the thumbnail. maybe keep a few versions of the bateman video ready
 # check if thumbnail for this song is already there (downloaded)
 # use logging module
+# use uv package manager
 from bs4 import BeautifulSoup
 import requests
 import os
