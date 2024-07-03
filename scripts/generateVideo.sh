@@ -14,6 +14,8 @@ currentTime=$(date +"%H-%M-%S")
 batemanVideoPath="./assets/bateman_final.mp4"
 outputFileName="out_$currentTime.mp4"
 outputFilePath="./outputs/$outputFileName"
+# create directory if it doesn't exist already
+[ -d "./outputs" ] || mkdir -p "./outputs"
 
 callFFMPEG() {
     ffmpeg -i "$bgImagePath" -i "$batemanVideoPath" -filter_complex \
