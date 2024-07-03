@@ -7,6 +7,12 @@
 # check if thumbnail for this song is already there (downloaded)
 # use logging module
 # use uv package manager
+# feature: add crop capability for thumbnail
+# temporarily handle different resolutions by cropping
+
+# uploaded image crop: allow any range between original ratio of bateman_original.mp4 and 1:1
+# according to the thumbnail, crop the bateman_original.mp4
+# for youtube, keep it frinctionless: use bateman_original.mp4
 from bs4 import BeautifulSoup
 import requests
 import os
@@ -34,16 +40,16 @@ def get_ytmusic_thumbnail(url: str) -> str | None:
 
     if "Your browser is deprecated" in str(title_tags[0]):
         meta = soup.find("meta", {"property": "og:image"})
-        image_link = meta.get("content", None)
+        thumbnail_url = meta.get("content", None)
 
-    if image_link is not None:
-        rr = requests.get(image_link)
+    if thumbnail_url is not None:
+        rr = requests.get(thumbnail_url)
         if rr.status_code != 200:
             return None
         save_name = regex.findall(".*=(.*)", url)[0]  # extract last part of url
 
-        os.makedirs("./assets/thumbnails", exist_ok=True)
-        save_path = os.path.join("./assets/thumbnails", f"{save_name}.jpg")
+        os.makedirs("./assets/thumbnails/ytmusic", exist_ok=True)
+        save_path = os.path.join("./assets/thumbnails/ytmusic", f"{save_name}.jpg")
         with Image.open(BytesIO(rr.content)) as im:
             try:
                 im.save(save_path, format="JPEG")
@@ -52,6 +58,7 @@ def get_ytmusic_thumbnail(url: str) -> str | None:
                 return None
 
 
-get_ytmusic_thumbnail(
-    "https://music.youtube.com/watch?v=vQ0u09mFodw&list=PLe1TEKS7ZJ1n4ha8ILgKQHwSOz7TedObD"
-)
+if __name__ == "__main__":
+    get_ytmusic_thumbnail(
+        "https://music.youtube.com/watch?v=qjnn00I9t4I&si=8EyUorifYtMbV7Sz"
+    )

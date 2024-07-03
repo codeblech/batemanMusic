@@ -3,7 +3,8 @@ import subprocess
 import os
 import tempfile
 
-from scripts.ytmusic_thumbnail import get_ytmusic_thumbnail
+from ytmusic_thumbnail import get_ytmusic_thumbnail
+from youtube_thumbnail import get_yt_thumbnail
 
 
 def generate_output_video(bg_image_path: str) -> str:
@@ -17,6 +18,22 @@ def generate_output_video(bg_image_path: str) -> str:
     """
     result = subprocess.run(
         ["scripts/generateVideo.sh", bg_image_path], capture_output=True
+    )
+    output_video_path = str(result.stdout).lstrip("b'").rstrip("\\n'")
+    return output_video_path
+
+
+def generate_output_video_landscape(bg_image_path: str) -> str:
+    """Generates the final video using a bash script that uses ffmpeg. It uses a landscape bateman video
+
+    Args:
+        background_temp_file_path (str): path to the background image
+
+    Returns:
+        str: path to the output video
+    """
+    result = subprocess.run(
+        ["scripts/generateVideoLandscape.sh", bg_image_path], capture_output=True
     )
     output_video_path = str(result.stdout).lstrip("b'").rstrip("\\n'")
     return output_video_path
@@ -44,11 +61,19 @@ st.divider()
 st.subheader("OR")
 st.divider()
 
-st.subheader("Paste the YouTube Music link of your favourite song!")
-song_url = st.text_input(("YouTube Music URL"), value=None)
-if song_url is not None:
-    bg_image_path = get_ytmusic_thumbnail(song_url)
+st.subheader("Paste the YouTube Music link of your favourite song!", divider="rainbow")
+ytmusic_url = st.text_input(("YouTube Music URL"), value=None)
+if ytmusic_url is not None:
+    bg_image_path = get_ytmusic_thumbnail(ytmusic_url)
     output_video_path = generate_output_video(bg_image_path)
+    display_generated_video(output_video_path)
+
+
+st.subheader("Paste the YouTube link of your favourite song!", divider="rainbow")
+youtube_url = st.text_input(("YouTube URL"), value=None)
+if youtube_url is not None:
+    bg_image_path = get_yt_thumbnail(youtube_url)
+    output_video_path = generate_output_video_landscape(bg_image_path)
     display_generated_video(output_video_path)
 
 
