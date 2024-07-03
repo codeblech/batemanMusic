@@ -3,7 +3,7 @@ import subprocess
 import os
 import tempfile
 
-from thumbnail import get_ytmusic_thumbnail
+from scripts.ytmusic_thumbnail import get_ytmusic_thumbnail
 
 
 def generate_output_video(bg_image_path: str) -> str:
