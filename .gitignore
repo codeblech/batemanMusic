@@ -1,3 +1,9 @@
+# added by me
+/assets/
+!/assets/bateman_final.mp4
+!/assets/bateman_original.mp4
+
+/outputs
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
