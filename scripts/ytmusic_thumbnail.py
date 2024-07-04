@@ -1,7 +1,7 @@
 # thumbnail xpath: //*[@id="img"]
 # thumbnail full xpath: /html/body/ytmusic-app/ytmusic-app-layout/ytmusic-player-page/div/div[1]/ytmusic-player/div[1]/yt-img-shadow/img
 # next step: robustness. add code to handle when ytmusc doesnt return deprecation warning.
-# more meaning error handling
+# more meaningful error handling
 # make the filename unique using other metadata
 # handle the landscape style thumbnails. maybe crop the bateman video according to the thumbnail. maybe keep a few versions of the bateman video ready
 # check if thumbnail for this song is already there (downloaded)
@@ -22,7 +22,7 @@ import regex
 
 
 def get_ytmusic_thumbnail(url: str) -> str | None:
-    """Get the thumbnail of a song using its youtube music url
+    """Get the thumbnail of a song, playlist, or album using its youtube music url
 
     Args:
         link (str): YouTube Music url to the song

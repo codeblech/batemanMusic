@@ -3,7 +3,7 @@ from PIL import Image
 import os
 from io import BytesIO
 import re
-
+# youtube music thumbnails can also be grabbed in this manner
 
 # this function is taken from https://gist.github.com/rodrigoborgesdeoliveira/987683cfbfcc8d800192da1e73adc486?permalink_comment_id=5097394#gistcomment-5097394
 def get_youtube_video_id_by_url(url):
@@ -19,6 +19,7 @@ def get_youtube_video_id_by_url(url):
         return None
 
 
+# if yt link if provided, generate two videos: square and landscape
 def get_yt_thumbnail(url: str) -> None | str:
     """Get the thumbnail of a song using its youtube music url
 
@@ -35,7 +36,7 @@ def get_yt_thumbnail(url: str) -> None | str:
     # check if this thumbnail is already available, and return it if it exists
     try:
         with open(save_path) as im:
-            pass
+            print("using already generated youtube thumbnail")
         return save_path
     except:
         pass
@@ -46,8 +47,6 @@ def get_yt_thumbnail(url: str) -> None | str:
         if rr.status_code != 200:
             return None
         os.makedirs("./assets/thumbnails/youtube", exist_ok=True)
-        print(save_path)
-        print(save_name)
         with Image.open(BytesIO(rr.content)) as im:
             try:
                 im.save(save_path, format="JPEG")

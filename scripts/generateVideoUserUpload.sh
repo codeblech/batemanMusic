@@ -11,15 +11,16 @@ fi
 # To get the current time in the format Hour:Minute:Second
 currentTime=$(date +"%H-%M-%S")
 
-batemanVideoPath="./assets/bateman_final.mp4"
-outputFileName="out_$currentTime.mp4"
-outputFilePath="./outputs/$outputFileName"
+batemanVideoPath="./assets/bateman_original.mp4"
+outputFileName="user_upload_$currentTime.mp4"
+outputFilePath="./outputs/user_upload/$outputFileName"
 # create directory if it doesn't exist already
-[ -d "./outputs" ] || mkdir -p "./outputs"
+[ -d "./outputs/user_upload" ] || mkdir -p "./outputs/user_upload"
 
 callFFMPEG() {
     ffmpeg -i "$bgImagePath" -i "$batemanVideoPath" -filter_complex \
-    "[1:v]colorkey=0x00C04C:0.2:0.1[keyed];[0:v][keyed]overlay" \
+    "[0:v]scale=-1:1080[bg];[1:v]colorkey=0x00C04C:0.2:0.1[keyed]; \
+    [bg][keyed]overlay=(W-w)/2:(H-h)/2" \
     $outputFilePath
 }
 

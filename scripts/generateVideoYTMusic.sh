@@ -12,14 +12,15 @@ fi
 currentTime=$(date +"%H-%M-%S")
 
 batemanVideoPath="./assets/bateman_original.mp4"
-outputFileName="out_$currentTime.mp4"
-outputFilePath="./outputs/$outputFileName"
+outputFileName="ytmusic_$currentTime.mp4"
+outputFilePath="./outputs/ytmusic/$outputFileName"
 # create directory if it doesn't exist already
-[ -d "./outputs" ] || mkdir -p "./outputs"
+[ -d "./outputs/ytmusic" ] || mkdir -p "./outputs/ytmusic"
 
 callFFMPEG() {
     ffmpeg -i "$bgImagePath" -i "$batemanVideoPath" -filter_complex \
-    "[0:v]scale=1920:1080[bg];[1:v]colorkey=0x00C04C:0.2:0.1[keyed];[bg][keyed]overlay" \
+    "[0:v]scale=-1:1080[bg];[1:v]colorkey=0x00C04C:0.2:0.1[keyed]; \
+    [bg][keyed]overlay=(W-w)/2:(H-h)/2" \
     $outputFilePath
 }
 
