@@ -2,17 +2,16 @@
 # thumbnail full xpath: /html/body/ytmusic-app/ytmusic-app-layout/ytmusic-player-page/div/div[1]/ytmusic-player/div[1]/yt-img-shadow/img
 # next step: robustness. add code to handle when ytmusc doesnt return deprecation warning.
 # more meaningful error handling
-# make the filename unique using other metadata
-# handle the landscape style thumbnails. maybe crop the bateman video according to the thumbnail. maybe keep a few versions of the bateman video ready
+# make the filename unique and predictable using better regex to get video id in ytmusic
 # check if thumbnail for this song is already there (downloaded)
 # use logging module
 # use uv package manager
-# feature: add crop capability for thumbnail
-# temporarily handle different resolutions by cropping
 
 # uploaded image crop: allow any range between original ratio of bateman_original.mp4 and 1:1
-# according to the thumbnail, crop the bateman_original.mp4
-# for youtube, keep it frinctionless: use bateman_original.mp4
+
+# add spotify support
+# add music
+
 from bs4 import BeautifulSoup
 import requests
 import os
@@ -46,10 +45,11 @@ def get_ytmusic_thumbnail(url: str) -> str | None:
         rr = requests.get(thumbnail_url)
         if rr.status_code != 200:
             return None
+        
         save_name = regex.findall(".*=(.*)", url)[0]  # extract last part of url
-
-        os.makedirs("./assets/thumbnails/ytmusic", exist_ok=True)
         save_path = os.path.join("./assets/thumbnails/ytmusic", f"{save_name}.jpg")
+        os.makedirs("./assets/thumbnails/ytmusic", exist_ok=True)
+
         with Image.open(BytesIO(rr.content)) as im:
             try:
                 im.save(save_path, format="JPEG")

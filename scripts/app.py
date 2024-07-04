@@ -6,6 +6,7 @@ import tempfile
 
 from ytmusic_thumbnail import get_ytmusic_thumbnail
 from youtube_thumbnail import get_yt_thumbnail
+from spotify_thumbnail import get_spotify_thumbnail
 
 if "output_video_path" not in st.session_state:
     st.session_state["output_video_path"] = (
@@ -30,6 +31,30 @@ def generate_output_video_user_upload(bg_image_path: str) -> str:
             continue
     result = subprocess.run(
         ["scripts/generateVideoUserUpload.sh", bg_image_path], capture_output=True
+    )
+    output_video_path = str(result.stdout).lstrip("b'").rstrip("\\n'")
+    st.session_state["output_video_path"].append({bg_image_path: output_video_path})
+
+    return output_video_path
+
+
+def generate_output_video_spotify(bg_image_path: str) -> str:
+    """Generates the final video using a bash script that uses ffmpeg
+
+    Args:
+        background_temp_file_path (str): path to the background image
+
+    Returns:
+        str: path to the output video
+    """
+    for dictionary in st.session_state["output_video_path"]:
+        if dictionary.get(bg_image_path, None) is not None:
+            print("using already generated video")
+            return dictionary[bg_image_path]
+        else:
+            continue
+    result = subprocess.run(
+        ["scripts/generateVideoSpotify.sh", bg_image_path], capture_output=True
     )
     output_video_path = str(result.stdout).lstrip("b'").rstrip("\\n'")
     st.session_state["output_video_path"].append({bg_image_path: output_video_path})
@@ -121,7 +146,16 @@ if uploaded_background is not None:
 
 st.subheader("OR")
 
-st.subheader("Paste the YouTube Music link of your favourite song!", divider="rainbow")
+st.subheader("Paste the Spotify link of your favourite song!", divider="rainbow")
+spotify_url = st.text_input(("Spotify URL"), value=None)
+if spotify_url is not None:
+    bg_image_path = get_spotify_thumbnail(spotify_url)
+    output_video_path = generate_output_video_spotify(bg_image_path)
+    display_generated_video(output_video_path)
+
+
+st.subheader("Paste the YTMusic link of your favourite song!", divider="rainbow")
+st.info("You can even paste the link of your YTMusic playlist or album", icon="🔥")
 ytmusic_url = st.text_input(("YouTube Music URL"), value=None)
 if ytmusic_url is not None:
     bg_image_path = get_ytmusic_thumbnail(ytmusic_url)
