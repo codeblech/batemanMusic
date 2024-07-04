@@ -1,3 +1,4 @@
+# store generated video path in session_state and avoid re-rendering
 import streamlit as st
 import subprocess
 import os
@@ -6,6 +7,8 @@ import tempfile
 from ytmusic_thumbnail import get_ytmusic_thumbnail
 from youtube_thumbnail import get_yt_thumbnail
 
+if "output_video_path" not in st.session_state:
+    st.session_state["output_video_path"] = []  # list of dicts. key:bg_image_path :: value: ouput_video_path
 
 def generate_output_video(bg_image_path: str) -> str:
     """Generates the final video using a bash script that uses ffmpeg
@@ -16,10 +19,18 @@ def generate_output_video(bg_image_path: str) -> str:
     Returns:
         str: path to the output video
     """
+    for dictionary in st.session_state["output_video_path"]:
+        if dictionary.get(bg_image_path, None) is not None:
+            print("using already generated video")
+            return dictionary[bg_image_path]
+        else:
+            continue
     result = subprocess.run(
         ["scripts/generateVideo.sh", bg_image_path], capture_output=True
     )
     output_video_path = str(result.stdout).lstrip("b'").rstrip("\\n'")
+    st.session_state["output_video_path"].append({bg_image_path: output_video_path})
+
     return output_video_path
 
 
@@ -32,15 +43,25 @@ def generate_output_video_landscape(bg_image_path: str) -> str:
     Returns:
         str: path to the output video
     """
+    # session state looks like this
+    # {'output_video_path': [{'./assets/thumbnails/youtube/1-W6whvn8Bs.jpg': './outputs/out_14-55-14.mp4'}]}
+    for dictionary in st.session_state["output_video_path"]:
+        if dictionary.get(bg_image_path, None) is not None:
+            print("using already generated thumbnail")
+            return dictionary[bg_image_path]
+        else:
+            continue
     result = subprocess.run(
         ["scripts/generateVideoLandscape.sh", bg_image_path], capture_output=True
     )
     output_video_path = str(result.stdout).lstrip("b'").rstrip("\\n'")
+    st.session_state["output_video_path"].append({bg_image_path: output_video_path})
+    print(st.session_state)
     return output_video_path
 
 
 def display_generated_video(output_video_path):
-    st.write(f"Generated video saved to {output_video_path}")
+    # st.write(f"Generated video saved to {output_video_path}")
     st.video(output_video_path, loop=False, autoplay=True, muted=False)
 
 
@@ -87,7 +108,7 @@ if uploaded_background is not None:
         with open(background_temp_file_path, "wb") as temp_file:
             temp_file.write(uploaded_background.read())
 
-        st.write(f"File saved to {background_temp_file_path}")
+        # st.write(f"File saved to {background_temp_file_path}")
 
         output_video_path = generate_output_video(background_temp_file_path)
         display_generated_video(output_video_path)

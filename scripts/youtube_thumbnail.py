@@ -29,15 +29,23 @@ def get_yt_thumbnail(url: str) -> None | str:
         str | None: path to the downloaded thumbail image file
     """
     video_id: str = get_youtube_video_id_by_url(url)
+    save_name = video_id
+    save_path = os.path.join("./assets/thumbnails/youtube", f"{save_name}.jpg")
+
+    # check if this thumbnail is already available, and return it if it exists
+    try:
+        with open(save_path) as im:
+            pass
+        return save_path
+    except:
+        pass
     thumbnail_url: str = "https://img.youtube.com/vi/" + video_id + "/maxresdefault.jpg"
 
     if thumbnail_url is not None:
         rr = requests.get(thumbnail_url)
         if rr.status_code != 200:
             return None
-        save_name = video_id
         os.makedirs("./assets/thumbnails/youtube", exist_ok=True)
-        save_path = os.path.join("./assets/thumbnails/youtube", f"{save_name}.jpg")
         print(save_path)
         print(save_name)
         with Image.open(BytesIO(rr.content)) as im:
