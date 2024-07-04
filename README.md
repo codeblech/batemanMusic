@@ -12,3 +12,6 @@ https://patrickbateman.streamlit.app/
 - create and activate a virtual environment
 - run `pip install -r requirements.txt`
 - run `streamlit scipts/app.py`
+
+# Info
+- While using a YouTube url, if you see colored/black bars on left and right side of the generated video, you should use YouTube Music url of that song. Or, you should use the video version of the song.
