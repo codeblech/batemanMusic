@@ -14,4 +14,5 @@ https://bateman.streamlit.app/
 - run `streamlit scipts/app.py`
 
 # Info
+- Consider downloading cover art from [this website](https://bendodson.com/projects/itunes-artwork-finder/index.html) for superior quality. *I'm in no manner affiliated to this genius website*
 - While using a YouTube url, if you see colored/black bars on left and right side of the generated video, you should use YouTube Music url of that song. Or, you should use the video version of the song.
