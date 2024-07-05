@@ -5,6 +5,9 @@ import os
 import tempfile
 import re
 from datetime import datetime, timedelta
+import mimetypes
+
+import yt_dlp
 
 from ytmusic_thumbnail import get_ytmusic_thumbnail
 from youtube_thumbnail import get_yt_thumbnail
@@ -112,9 +115,9 @@ def download_song_spotify(url: str) -> str:
         return st.session_state["song_state"][url]
 
     # spotify_dl downloads the song, and outputs a lot of things on stdout, among them is save location
-    os.makedirs("./audio", exist_ok=True)
+    os.makedirs("./audio/spotify", exist_ok=True)
     result = subprocess.run(
-        ["spotify_dl", "-l", url, "-o", "./audio", "-m"], capture_output=True
+        ["spotify_dl", "-l", url, "-o", "./audio/spotify", "-m"], capture_output=True
     )
     pattern = r"\[download\] Destination: (.+?)\n|\[download\] (.+?) has already been downloaded\n"
     match = re.search(pattern, result.stdout.decode("utf-8"))
@@ -122,6 +125,41 @@ def download_song_spotify(url: str) -> str:
         song_path = match.group(1) if match.group(1) else match.group(2)
         st.session_state["song_state"][url] = song_path
         return song_path
+
+
+def download_song_youtube(url: str) -> str:
+    # if the song is already downloaded, no need to download again.
+    if url in st.session_state["song_state"]:
+        print("Using already downloaded song: youtube")
+        return st.session_state["song_state"][url]
+
+    output_location = {}
+
+    def hook(d):
+        if d["status"] == "finished":
+            output_location["filename"] = d["filename"]
+
+    os.makedirs("./audio/youtube", exist_ok=True)
+    urls = [url]
+
+    ydl_opts = {
+        "format": "m4a/bestaudio/best",
+        "postprocessors": [
+            {  # Extract audio using ffmpeg
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "aac",
+            }
+        ],
+        "outtmpl": os.path.join(
+            "./audio/youtube", "%(title)s.%(ext)s"
+        ),  # Set the output directory and filename template
+        "progress_hooks": [hook],
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        error_code = ydl.download(urls)
+        print("youtube-dl error code: ", error_code)
+    return output_location.get("filename", "Download failed or file not found")
 
 
 def get_song_duration(song_path: str) -> float:
@@ -159,7 +197,12 @@ def combine_audio_video(
         str: _description_
     """
     result = subprocess.run(
-        ["./scripts/combineAudioVideo.sh", song_path, output_video_path, str(delay_in_seconds)],
+        [
+            "./scripts/combineAudioVideo.sh",
+            song_path,
+            output_video_path,
+            str(delay_in_seconds),
+        ],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
@@ -169,8 +212,16 @@ def combine_audio_video(
     return final_video_path
 
 
-def display_downloaded_song(song_path):
+def display_downloaded_song_spotify(song_path):
     st.audio(song_path, format="audio/webm", autoplay=False)
+
+
+def display_downloaded_song_youtube(song_path):
+    try:
+        st.audio(song_path, format="audio/m4a", autoplay=False)
+    except:
+        mime_type, _ = mimetypes.guess_type(song_path)
+        st.audio(song_path, format=mime_type)
 
 
 def display_generated_video(output_video_path):
@@ -210,7 +261,7 @@ if spotify_url is not None:
     display_generated_video(output_video_path)
 
     song_path = download_song_spotify(spotify_url)
-    display_downloaded_song(song_path)
+    display_downloaded_song_spotify(song_path)
     song_duration_in_seconds = get_song_duration(song_path)
 
     min_datetime = datetime(1970, 1, 1)
@@ -229,7 +280,9 @@ if spotify_url is not None:
         f"Click the 'Embed Audio' button to add audio to the video, starting from {start_time.minute}:{start_time.second}"
     )
     if st.button(label="Embed Audio 🎧"):
-        final_video_path = combine_audio_video(output_video_path, song_path, delay_in_seconds)
+        final_video_path = combine_audio_video(
+            output_video_path, song_path, delay_in_seconds
+        )
         display_generated_video(final_video_path)
 
 
@@ -248,3 +301,28 @@ if youtube_url is not None:
     bg_image_path = get_yt_thumbnail(youtube_url)
     output_video_path = generate_output_video_youtube(bg_image_path)
     display_generated_video(output_video_path)
+
+    song_path = download_song_youtube(youtube_url)
+    display_downloaded_song_youtube(song_path)
+    song_duration_in_seconds = get_song_duration(song_path)
+
+    min_datetime = datetime(1970, 1, 1)
+    max_datetime = min_datetime + timedelta(seconds=song_duration_in_seconds)
+
+    start_time = st.slider(
+        "Start Time",
+        min_value=min_datetime,
+        max_value=max_datetime,
+        step=timedelta(seconds=1),
+        format="mm:ss",
+        help="From this start time, the song will be added to the generated video",
+    )
+    delay_in_seconds = start_time.minute * 60 + start_time.second
+    st.write(
+        f"Click the 'Embed Audio' button to add audio to the video, starting from {start_time.minute}:{start_time.second}"
+    )
+    if st.button(label="Embed Audio 🎧"):
+        final_video_path = combine_audio_video(
+            output_video_path, song_path, delay_in_seconds
+        )
+        display_generated_video(final_video_path)
