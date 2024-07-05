@@ -1,5 +1,3 @@
-# thumbnail xpath: //*[@id="img"]
-# thumbnail full xpath: /html/body/ytmusic-app/ytmusic-app-layout/ytmusic-player-page/div/div[1]/ytmusic-player/div[1]/yt-img-shadow/img
 # next step: robustness. add code to handle when ytmusc doesnt return deprecation warning.
 # more meaningful error handling
 # make the filename unique and predictable using better regex to get video id in ytmusic
@@ -7,10 +5,12 @@
 # use logging module
 # use uv package manager
 
-# uploaded image crop: allow any range between original ratio of bateman_original.mp4 and 1:1
+# avoid re-rendering of site on using slider
+# give a key to every slider, embed button, audio and video element to make them unique
+# add music to youtube music videos
+# yt_dlp doesn't work on hosted site
+# make a single input box that detects what platform link is pasted
 
-# add spotify support
-# add music
 
 from bs4 import BeautifulSoup
 import requests

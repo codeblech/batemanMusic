@@ -256,7 +256,7 @@ st.set_page_config(
     page_icon=":speaking_head_in_silhouette:",
     layout="centered",
 )
-st.info("Music can only be added when using Spotify links")
+st.info("Functionality to add music is in beta, and not available for YTMusic, and uploaded images")
 st.subheader("Upload your own cover art!", divider="rainbow")
 uploaded_background = st.file_uploader(
     "Upload image",
