@@ -112,8 +112,9 @@ def download_song_spotify(url: str) -> str:
         return st.session_state["song_state"][url]
 
     # spotify_dl downloads the song, and outputs a lot of things on stdout, among them is save location
+    os.makedirs("./audio", exist_ok=True)
     result = subprocess.run(
-        ["spotify_dl", "-l", url, "-o", "./audio"], capture_output=True
+        ["spotify_dl", "-l", url, "-o", "./audio", "-m"], capture_output=True
     )
     pattern = r"\[download\] Destination: (.+?)\n|\[download\] (.+?) has already been downloaded\n"
     match = re.search(pattern, result.stdout.decode("utf-8"))
@@ -209,6 +210,7 @@ if spotify_url is not None:
     display_generated_video(output_video_path)
 
     song_path = download_song_spotify(spotify_url)
+    display_downloaded_song(song_path)
     song_duration_in_seconds = get_song_duration(song_path)
 
     min_datetime = datetime(1970, 1, 1)
@@ -229,7 +231,6 @@ if spotify_url is not None:
     if st.button(label="Embed Audio 🎧"):
         final_video_path = combine_audio_video(output_video_path, song_path, delay_in_seconds)
         display_generated_video(final_video_path)
-    display_downloaded_song(song_path)
 
 
 st.subheader("Paste the YTMusic link of your favourite song!", divider="rainbow")
