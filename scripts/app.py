@@ -1,4 +1,3 @@
-# store generated video path in session_state and avoid re-rendering
 import streamlit as st
 import subprocess
 import os
@@ -109,6 +108,14 @@ def generate_output_video_youtube(bg_image_path: str) -> str:
 
 
 def download_song_spotify(url: str) -> str:
+    """downloads song using spotify_dl
+
+    Args:
+        url (str): url to track on spotify
+
+    Returns:
+        str: path of the downloaded song
+    """
     # if the song is already downloaded, no need to download again.
     if url in st.session_state["song_state"]:
         print("Using already downloaded song: spotify")
@@ -128,6 +135,14 @@ def download_song_spotify(url: str) -> str:
 
 
 def download_song_youtube(url: str) -> str:
+    """downloads video using yt_dlp and extracts audio from it.
+
+    Args:
+        url (str): url to song on youtube
+
+    Returns:
+        str: path of the downloaded song
+    """
     # if the song is already downloaded, no need to download again.
     if url in st.session_state["song_state"]:
         print("Using already downloaded song: youtube")
@@ -163,6 +178,14 @@ def download_song_youtube(url: str) -> str:
 
 
 def get_song_duration(song_path: str) -> float:
+    """finds the duration of a song in seconds
+
+    Args:
+        song_path (str): path to song
+
+    Returns:
+        float: song duration in seconds
+    """
     result = subprocess.run(
         [
             "ffprobe",
@@ -233,7 +256,7 @@ st.set_page_config(
     page_icon=":speaking_head_in_silhouette:",
     layout="centered",
 )
-
+st.info("Music can only be added when using Spotify links")
 st.subheader("Upload your own cover art!", divider="rainbow")
 uploaded_background = st.file_uploader(
     "Upload image",
