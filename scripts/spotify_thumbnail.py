@@ -1,5 +1,6 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+# from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 
 import os
@@ -10,7 +11,8 @@ from PIL import Image
 load_dotenv()
 
 def get_spotify_thumbnail(url: str) -> None | str:
-    spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+    # spotify = spotipy.Spotify(auth_manager=SpotifyOAuth())
+    spotify = spotipy.Spotify(auth_manager=SpotifyClientCredentials())
     result = spotify.track(url)
 
     thumbnail_url = result["album"]["images"][0]["url"]

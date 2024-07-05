@@ -3,6 +3,7 @@ from PIL import Image
 import os
 from io import BytesIO
 import re
+
 # youtube music thumbnails can also be grabbed in this manner
 
 # this function is taken from https://gist.github.com/rodrigoborgesdeoliveira/987683cfbfcc8d800192da1e73adc486?permalink_comment_id=5097394#gistcomment-5097394

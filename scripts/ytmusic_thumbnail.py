@@ -45,8 +45,8 @@ def get_ytmusic_thumbnail(url: str) -> str | None:
         rr = requests.get(thumbnail_url)
         if rr.status_code != 200:
             return None
-        
-        save_name = regex.findall(".*=(.*)", url)[0]  # extract last part of url
+
+        save_name = regex.findall(r".*=(.*)", url)[0]  # extract last part of url
         save_path = os.path.join("./assets/thumbnails/ytmusic", f"{save_name}.jpg")
         os.makedirs("./assets/thumbnails/ytmusic", exist_ok=True)
 
