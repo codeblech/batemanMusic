@@ -131,6 +131,7 @@ def download_song_spotify(url: str) -> str:
     if match:
         song_path = match.group(1) if match.group(1) else match.group(2)
         st.session_state["song_state"][url] = song_path
+        print(song_path)
         return song_path
 
 
@@ -203,6 +204,7 @@ def get_song_duration(song_path: str) -> float:
         text=True,
     )
     duration_in_seconds = result.stdout.strip()
+    print("duration: ", duration_in_seconds)
     return float(duration_in_seconds)
 
 
